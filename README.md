@@ -25,11 +25,13 @@ attributions = compute_modality_attributions(model, X_test, Phi, Y_test)
 ```
 
 See `mm_timeview/mm_timeview.ipynb` for a complete example.
-```
 
-## Dependencies
-You can install all required dependencies using conda and the following command
-```
+### Dependencies
+
+Install required dependencies with conda:
+
+```bash
 conda env create -n timeview --file environment.yml
 ```
+
 This will also install `timeview` (the main module) in editable mode.
