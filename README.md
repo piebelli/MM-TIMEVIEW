@@ -1,11 +1,30 @@
-# TIMEVIEW
+## MM-TIMEVIEW
 
-This is the original repository for the paper "Towards Transparent Time Series Forecasting".
+**MM-TIMEVIEW** is a multimodal extension of TIMEVIEW that supports multiple input modalities (e.g., clinical data, imaging features, genomics). Key features:
 
-## Clone the repository
-Clone the repository using
+- **Modality-specific encoders**: Each modality is processed by a dedicated encoder
+- **Fusion network**: Combines modality embeddings to predict basis coefficients
+- **Modality attribution**: Quantifies each modality's contribution to predictions
+
+### Quick Start
+```python
+from mm_timeview import create_mm_timeview, train_mm_timeview, compute_modality_attributions
+
+# Define modality structure
+modality_config = {
+    'clinical': {'indices': [0, 1, 2], 'embedding_dim': 8},
+    'imaging': {'indices': [3, 4, 5, 6], 'embedding_dim': 8}
+}
+
+# Create and train model
+model = create_mm_timeview(modality_config, n_basis=10)
+train_mm_timeview(model, X_train, Phi, Y_train)
+
+# Compute modality attributions
+attributions = compute_modality_attributions(model, X_test, Phi, Y_test)
 ```
-git clone https://github.com/krzysztof-kacprzyk/TIMEVIEW.git
+
+See `mm_timeview/mm_timeview.ipynb` for a complete example.
 ```
 
 ## Dependencies
@@ -14,42 +33,3 @@ You can install all required dependencies using conda and the following command
 conda env create -n timeview --file environment.yml
 ```
 This will also install `timeview` (the main module) in editable mode.
-
-## Running all experiments
-To run all experiments navigate to `experiments` using
-```
-cd experiments
-``` 
-and run
-```
-./run_scripts/run_all.sh
-```
-Or you can call the scripts individually in `run_scripts`.
-
-The results will be saved in
-```
-experiments/benchmarks/{timestamp}/
-experiments/benchmarks/summary.json
-```
-
-## Figures and tables
-Jupyter notebooks used to create all figures and tables in the paper can be found in `experiments/analysis`.
-
-## Other information
-To properly install PySR follow instructions on https://github.com/MilesCranmer/PySR
-
-## Citations
-If you use this code, please cite using the following information.
-
-*Kacprzyk, K., Liu, T. & van der Schaar, M. Towards Transparent Time Series Forecasting. The Twelfth International Conference on Learning Representations (2024).*
-
-
-```
-@inproceedings{Kacprzyk.TransparentTimeSeries.2024,
-  title = {Towards Transparent Time Series Forecasting},
-  booktitle = {The {{Twelfth International Conference}} on {{Learning Representations}}},
-  author = {Kacprzyk, Krzysztof and Liu, Tennison and {van der Schaar}, Mihaela},
-  year = {2024},
-}
-```
-
