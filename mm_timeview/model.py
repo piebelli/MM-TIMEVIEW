@@ -230,6 +230,7 @@ def train_mm_timeview(
     n_epochs: int = 100,
     lr: float = 0.01,
     batch_size: int = 32,
+    lambda_smooth: float = 0.1,  # ADD THIS PARAMETER
     verbose: bool = True,
     device: torch.device = None
 ) -> Dict[str, List[float]]:
@@ -244,6 +245,7 @@ def train_mm_timeview(
         n_epochs: Number of training epochs
         lr: Learning rate
         batch_size: Batch size for training
+        lambda_smooth: Weight for smoothness regularization
         verbose: Print progress
         device: Device to use (default: CPU)
 
@@ -282,9 +284,18 @@ def train_mm_timeview(
 
                 Phi = torch.from_numpy(model.basis.get_matrix(t_i)).float().to(device)
 
-                y_pred = model(x_i, Phi)
+                # coefficients for smoothness loss
+                c, _ = model.forward_with_embeddings(x_i)
+                y_pred = torch.matmul(Phi, c.squeeze()) + model.bias
 
-                batch_loss += torch.mean((y_pred - y_i) ** 2)
+                # MSE loss
+                mse_loss = torch.mean((y_pred - y_i) ** 2)
+                
+                # smoothness loss
+                smooth_loss = torch.mean((c[:, 1:] - c[:, :-1]) ** 2)
+                
+                # combined loss
+                batch_loss += mse_loss + lambda_smooth * smooth_loss
 
             batch_loss = batch_loss / len(batch_indices)
             batch_loss.backward()
